@@ -4,11 +4,13 @@ using System.Linq;
 using System.Text;
 
 using Xamarin.Forms;
+using Xamarin.Essentials;
 
 namespace Phoneword
 {
     public class MainPage : ContentPage
     {
+        //Create elements
         Entry phoneNumberText;
         Button translateButton;
         Button callButton;
@@ -17,6 +19,7 @@ namespace Phoneword
         {
             this.Padding = new Thickness(20);
 
+            //Instantiate UI
             StackLayout panel = new StackLayout
             {
                 Spacing = 15
@@ -45,11 +48,13 @@ namespace Phoneword
             });
 
             
-            //Why no arguments? why +=?
+            //Instantiate Listeners
             translateButton.Clicked += OnTranslate;
+            callButton.Clicked += OnCall;
             this.Content = panel;
         }
 
+        //Logic for TranslateButton
         private void OnTranslate(object sender, EventArgs e)
         {
             string enteredNumber = phoneNumberText.Text;
@@ -64,6 +69,33 @@ namespace Phoneword
             {
                 callButton.IsEnabled = false;
                 callButton.Text = "Call";
+            }
+        }
+        //Logic for callButton
+        private async void OnCall (object sender, System.EventArgs e)
+        {
+            if (await this.DisplayAlert (
+                "Dial a Number",
+                "Would you like to call " + translatedNumber + "?",
+                "Yes",
+                "No"))
+            {
+                try
+                {
+                    PhoneDialer.Open(translatedNumber);
+                }
+                catch (ArgumentNullException)
+                {
+                    await DisplayAlert("Unable to dial", "Num not valid", "Ok");
+                }
+                catch (FeatureNotEnabledException)
+                {
+                    await DisplayAlert("Unable", "Not supported", "Ok");
+                }
+                catch (Exception)
+                {
+                    await DisplayAlert("Unable", "Failed", "OK");
+                }
             }
         }
     }

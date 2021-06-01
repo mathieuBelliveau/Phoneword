@@ -6,6 +6,7 @@ namespace Phoneword
 {
     public static class PhonewordTranslator
     {
+        //Method to translate number
         public static string ToNumber(string raw)
         {
             if (string.IsNullOrWhiteSpace(raw))
